@@ -15,11 +15,7 @@ mongoose.connect(`mongodb+srv://${username}:${password}@cluster0.n1grmfz.mongodb
     {
        ssl: true
     }
-).then(() => {
-    console.log("Connected to MongoDB successfully");
-}).catch((error) => {
-    console.error("Error connecting to MongoDB:", error);
-});
+);
 
 const registrationSchema = new mongoose.Schema({
     name : String , 
@@ -62,7 +58,7 @@ app.post("/register", async (req, res) => {
            
          }
          else{
-            res.redirect("existing")
+            res.redirect("/existing")
          }
 
         
