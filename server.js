@@ -13,10 +13,13 @@ const password = process.env.MONGODB_PASSWORD;
 
 mongoose.connect(`mongodb+srv://${username}:${password}@cluster0.n1grmfz.mongodb.net/registrationFormDB` ,
     {
-        useNewUrlParser: true , 
-        useUnifiedTopology: true,
+       ssl: true
     }
-); 
+).then(() => {
+    console.log("Connected to MongoDB successfully");
+}).catch((error) => {
+    console.error("Error connecting to MongoDB:", error);
+});
 
 const registrationSchema = new mongoose.Schema({
     name : String , 
@@ -45,19 +48,24 @@ app.post("/register", async (req, res) => {
         
          // Check if the user already exists
          const existingUser = await Registration.findOne({ email: email });
-         if (existingUser) {
+         if (!existingUser) {
+            const registrationData = new Registration({
+                name, 
+                email, 
+                password
+            });
+    
+            await registrationData.save();
+    
+            res.redirect("success");
+            
+           
+         }
+         else{
             res.redirect("existing")
          }
 
-        const registrationData = new Registration({
-            name, 
-            email, 
-            password
-        });
-
-        await registrationData.save();
-
-        res.redirect("success");
+        
     } catch (error) {
         res.redirect("error"); 
     }
